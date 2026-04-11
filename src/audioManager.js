@@ -5,6 +5,13 @@ export class AudioManager {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.activeSources = [];
+    this.onActiveSourcesChanged = null;
+  }
+
+  _notifyChange() {
+    if (this.onActiveSourcesChanged) {
+      this.onActiveSourcesChanged(this.activeSources.map(s => s.url));
+    }
   }
 
   async loadSound(url) {
@@ -26,25 +33,41 @@ export class AudioManager {
     const buffer = this.buffers[url];
     if (!buffer) {
        this.loadSound(url).then(b => {
-         if (b) this._playBuffer(b);
+         if (b) this._playBuffer(b, url);
        });
        return;
     }
-    this._playBuffer(buffer);
+    this._playBuffer(buffer, url);
   }
 
-  async _playBuffer(buffer) {
+  async _playBuffer(buffer, url) {
     if (this.context.state === 'suspended') {
       await this.context.resume();
     }
     const source = this.context.createBufferSource();
     source.buffer = buffer;
+    source.url = url;
     source.connect(this.masterGain);
     source.start(0);
     this.activeSources.push(source);
+    this._notifyChange();
     source.onended = () => {
       this.activeSources = this.activeSources.filter(s => s !== source);
+      this._notifyChange();
     };
+  }
+
+  toggleSound(url) {
+    const playingSources = this.activeSources.filter(s => s.url === url);
+    if (playingSources.length > 0) {
+      playingSources.forEach(s => {
+        try { s.stop(); } catch(e){}
+      });
+      this.activeSources = this.activeSources.filter(s => s.url !== url);
+      this._notifyChange();
+    } else {
+      this.playSound(url);
+    }
   }
 
   setVolume(val) {
@@ -56,6 +79,7 @@ export class AudioManager {
       try { s.stop(); } catch(e){}
     });
     this.activeSources = [];
+    this._notifyChange();
   }
 }
 
