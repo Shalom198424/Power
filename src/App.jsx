@@ -4,8 +4,8 @@ import { globalAudio } from './audioManager';
 import { saveCustomPad, getCustomPads } from './utils/db';
 
 const PAD_CONFIG = [
-  { id: '7', keyLabel: '7', code: 'Numpad7', url: '/sounds/7.mp3' },
-  { id: '8', keyLabel: '8', code: 'Numpad8', url: '/sounds/8.mp3', name: 'CEL' },
+  { id: '7', keyLabel: '7', code: 'Numpad7', url: '/sounds/7.mp3', name: 'HIMNO' },
+  { id: '8', keyLabel: '8', code: 'Numpad8', url: '/sounds/8.mp3', name: 'MESSI' },
   { id: '9', keyLabel: '9', code: 'Numpad9', url: '/sounds/9.mp3', name: 'VIOLIN' },
   { id: '*', keyLabel: '*', code: 'NumpadMultiply', url: '/sounds/feliz.mp3', name: 'FELIZ' },
   { id: '4', keyLabel: '4', code: 'Numpad4', url: '/sounds/4.mp3', name: 'CHAN' },
